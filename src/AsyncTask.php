@@ -26,6 +26,7 @@ class AsyncTask {
     }
 
     protected static function _newExecution() {
+        // TODO: add dependency injection and other modes of execution
         return new CliExecution();
     }
 
@@ -58,7 +59,7 @@ class AsyncTask {
         if ($this->_state == ASYNC_DONE)
             return 100;
 
-        return floor(100 * ($this->_currentStep - 1) / count($this->_steps));
+        return floor(100 * $this->_currentStep / count($this->_steps));
     }
 
     public function syncExecute() {
