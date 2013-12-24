@@ -62,7 +62,6 @@ class AsyncTask {
     }
 
     public function syncExecute() {
-        set_time_limit(0);
         $this->_state = ASYNC_RUNNING;
         $this->_persist();
 
@@ -82,6 +81,10 @@ class AsyncTask {
 
         $this->_state = ASYNC_DONE;
         $this->_persist();
+    }
+
+    public function getOutput() {
+        return $this->_output;
     }
 
     protected function _persist() {

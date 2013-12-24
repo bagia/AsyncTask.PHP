@@ -7,6 +7,9 @@ if (isset($argv[1])) {
     echo "Task: {$identifier}\n";
     $task = AsyncTask::get($identifier);
     echo "Progress: {$task->getProgress()}\n";
+    foreach($task->getOutput() as $output) {
+        echo $output."\n\n";
+    }
     exit;
 }
 
