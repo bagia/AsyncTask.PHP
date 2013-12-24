@@ -20,7 +20,7 @@ class CliExecution implements Execution {
 
 }
 
-if (php_sapi_name() == "cli" && $argc > 1 && $argv[1] == "at_exec") {
+if (php_sapi_name() == "cli" && isset($argv[1]) && $argv[1] == "at_exec") {
     set_time_limit(0);
     echo "Trying to start...\n";
     $identifier = $argv[2];

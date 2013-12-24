@@ -23,9 +23,13 @@ class FilePersistence implements Persistence {
 
     public function read() {
         if (!file_exists($this->_file) || !is_readable($this->_file))
-            trigger_error('Unable to read AsyncTask file', E_ERROR);
+            throw new Exception("File not found.");
 
         return file_get_contents($this->_file);
+    }
+
+    public function delete() {
+        unlink($this->_file);
     }
 
     protected function _getFile($identifier) {

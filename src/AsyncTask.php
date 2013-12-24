@@ -1,12 +1,13 @@
 <?php
 
-require_once('SerializableClosure.php');
-require_once('FilePersistence.php');
-require_once('CliExecution.php');
+spl_autoload_register(function($class) {
+   require_once("{$class}.php");
+});
 
 define('ASYNC_INIT', 0);
 define('ASYNC_RUNNING', 1);
 define('ASYNC_DONE', 2);
+define('ASYNC_DELETED', 3);
 
 class AsyncTask {
 
@@ -32,7 +33,12 @@ class AsyncTask {
 
     public static function get($identifier) {
         $persistence =  self::_newPersistence($identifier);
-        $task = unserialize($persistence->read());
+        try {
+            $task = unserialize($persistence->read());
+        } catch(Exception $exception) {
+            $task = new AsyncTask();
+            $task->_state = ASYNC_DELETED;
+        }
         return $task;
     }
 
@@ -56,7 +62,7 @@ class AsyncTask {
         if ($this->_state == ASYNC_INIT)
             return 0;
 
-        if ($this->_state == ASYNC_DONE)
+        if ($this->_state == ASYNC_DONE || $this->_state == ASYNC_DELETED)
             return 100;
 
         return floor(100 * $this->_currentStep / count($this->_steps));
@@ -88,6 +94,15 @@ class AsyncTask {
         return $this->_output;
     }
 
+    public function getState() {
+        return $this->_state;
+    }
+
+    public function delete() {
+        $this->_persistence->delete();
+        $this->_state = ASYNC_DELETED;
+    }
+
     protected function _persist() {
         $this->_persistence->write(serialize($this));
     }
@@ -98,6 +113,7 @@ interface Persistence {
     public function getIdentifier();
     public function write($data);
     public function read();
+    public function delete();
 }
 
 interface Execution {
