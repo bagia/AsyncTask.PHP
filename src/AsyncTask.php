@@ -16,6 +16,7 @@ class AsyncTask {
     protected $_persistence;
     protected $_output = array();
     protected $_state = ASYNC_INIT;
+    protected $_auto_delete = FALSE;
 
     public function __construct() {
         $this->_persistence = self::_newPersistence();
@@ -86,8 +87,12 @@ class AsyncTask {
             $this->_persist();
         }
 
-        $this->_state = ASYNC_DONE;
-        $this->_persist();
+        if ($this->_auto_delete) {
+            $this->delete();
+        } else {
+            $this->_state = ASYNC_DONE;
+            $this->_persist();
+        }
     }
 
     public function getOutput() {
@@ -101,6 +106,10 @@ class AsyncTask {
     public function delete() {
         $this->_persistence->delete();
         $this->_state = ASYNC_DELETED;
+    }
+
+    public function autoDelete() {
+        $this->_auto_delete = TRUE;
     }
 
     protected function _persist() {

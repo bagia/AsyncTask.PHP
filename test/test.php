@@ -8,7 +8,7 @@ if (isset($argv[1])) {
     $task = AsyncTask::get($identifier);
     echo "Progress: {$task->getProgress()}\n";
     foreach($task->getOutput() as $output) {
-        echo $output."\n\n";
+        echo $output."\n";
     }
     exit;
 }
@@ -55,6 +55,7 @@ $task->addStep(new SerializableClosure(function() {
     echo "End step 8\n";
 }));
 
+$task->autoDelete();
 echo $task->start();
 echo "\n";
 
