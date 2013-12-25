@@ -1,6 +1,6 @@
 <?php
 
-require_once("AsyncTask.php");
+require_once("bootstrap.php");
 
 class FilePersistence implements Persistence {
 

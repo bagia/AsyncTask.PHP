@@ -1,14 +1,5 @@
 <?php
 
-spl_autoload_register(function($class) {
-   require_once("{$class}.php");
-});
-
-define('ASYNC_INIT', 0);
-define('ASYNC_RUNNING', 1);
-define('ASYNC_DONE', 2);
-define('ASYNC_DELETED', 3);
-
 class AsyncTask {
 
     protected $_steps = array();
@@ -43,7 +34,13 @@ class AsyncTask {
         return $task;
     }
 
-    public function addStep(SerializableClosure $step) {
+    public function addStep($step) {
+        if ($step instanceof Closure)
+            $step = new SerializableClosure($step);
+
+        if (!($step instanceof SerializableClosure))
+            trigger_error('Step must be a closure or a SerializableClosure object', E_ERROR);
+
         $this->_steps[] = $step;
     }
 
@@ -115,16 +112,4 @@ class AsyncTask {
     protected function _persist() {
         $this->_persistence->write(serialize($this));
     }
-}
-
-interface Persistence {
-    public function __construct($identifier = '');
-    public function getIdentifier();
-    public function write($data);
-    public function read();
-    public function delete();
-}
-
-interface Execution {
-    public function execute(AsyncTask $task);
 }

@@ -51,10 +51,16 @@ class SerializableClosure  {
      * Called prior to unserialization
      */
     public function __wakeup() {
+        $current_values = array();
+
         // restore the original context
         foreach($this->_static_variables as $name => $value) {
-            if (!isset($$name))
-                $$name = $value;
+            // if the variable already is set, save the current
+            // value temporarily
+            if (isset($$name)) {
+                $current_values[$name] = $$name;
+            }
+            $$name = $value;
         }
 
         // re-create the closure object
@@ -62,6 +68,11 @@ class SerializableClosure  {
         $eval = '$closure = ' . $this->_code . ';';
         eval($eval);
         $this->_closure = $closure;
+
+        // restore the variables that were overwritten
+        foreach($current_values as $name => $value) {
+            $$name = $value;
+        }
     }
 
     /**
@@ -85,8 +96,8 @@ class SerializableClosure  {
         $source = array_slice($source, $start_index, $end_index - $start_index + 1);
         $source = implode("", $source);
 
-        preg_match_all('#new\s*SerializableClosure\(\s*(.*)\)#ims', $source, $matches);
-        $source = $matches[1][0];
+        preg_match_all('#function\s*\((.*)}#ims', $source, $matches);
+        $source = $matches[0][0];
 
         // now we need to count the number of parenthesis to remove extra-code
         $open = mb_substr_count($source, "(");
