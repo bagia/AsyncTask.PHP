@@ -8,7 +8,7 @@ class AsyncTask {
     protected $_output = array();
     protected $_state = ASYNC_INIT;
     protected $_auto_delete = FALSE;
-    protected $_dependencies;
+    protected $_dependencies = array();
 
     public function __construct() {
         $this->_persistence = self::_newPersistence();

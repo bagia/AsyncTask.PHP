@@ -1,6 +1,6 @@
 <?php
 
-require_once("bootstrap.php");
+require_once(realpath(__DIR__ . "/bootstrap.php"));
 
 class CliExecution implements Execution {
 
@@ -14,7 +14,7 @@ class CliExecution implements Execution {
 
         if ($this->isWindows()) {
             $dir = realpath(__DIR__);
-            $command_line = "{$dir}/startbg/bin/startbg.exe php {$file_name} at_exec {$task->getIdentifier()}{$dependencies}";
+            $command_line = "{$dir}/startbg/bin/startbg.exe php {$file_name} at_exec {$task->getIdentifier()}{$dependencies} >NUL 2>NUL";
 
             system($command_line);
         } else {
