@@ -100,13 +100,13 @@ class SerializableClosure  {
         $source = $matches[0][0];
 
         // now we need to count the number of parenthesis to remove extra-code
-        $open = mb_substr_count($source, "(");
-        $close = mb_substr_count($source, ")");
+        $open = mb_substr_count($source, "{");
+        $close = mb_substr_count($source, "}");
         if ($close > $open) {
             $diff = $close - $open;
-            $explode = explode(")", $source);
+            $explode = explode("}", $source);
             $explode = array_slice($explode, 0, -$diff);
-            $source = implode(")", $explode);
+            $source = implode("}", $explode);
         }
 
         $this->_code = $source;
