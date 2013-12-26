@@ -63,7 +63,7 @@ class AsyncTask {
         if ($this->_state == ASYNC_DONE || $this->_state == ASYNC_DELETED)
             return 100;
 
-        return floor(100 * $this->_currentStep / count($this->_steps));
+        return floor(100 * ($this->_currentStep + 1) / count($this->_steps));
     }
 
     public function syncExecute() {
