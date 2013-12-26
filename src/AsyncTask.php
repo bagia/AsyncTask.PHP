@@ -25,8 +25,13 @@ class AsyncTask {
 
     public static function get($identifier) {
         $persistence =  self::_newPersistence($identifier);
+        $task = FALSE;
         try {
-            $task = unserialize($persistence->read());
+            for($intents = 0; $task === FALSE && $intents < 3; $intents++) {
+                $task = unserialize($persistence->read());
+            }
+            if ($task === FALSE)
+                throw new Exception("Unable to unserialize persisted data.");
         } catch(Exception $exception) {
             $task = new AsyncTask();
             $task->_state = ASYNC_DELETED;
@@ -90,6 +95,26 @@ class AsyncTask {
             $this->_state = ASYNC_DONE;
             $this->_persist();
         }
+    }
+
+    public function isDone() {
+        return $this->_state == ASYNC_DONE || $this->_state == ASYNC_DELETED;
+    }
+
+    public function getRefreshed() {
+        return self::get($this->getIdentifier());
+    }
+
+    public function getNewOutput(&$cursor) {
+        if (is_null($cursor))
+            $cursor = -1;
+
+        $intent_cursor = $cursor + 1;
+        if (isset($this->_output[$intent_cursor])) {
+            $cursor = $intent_cursor;
+            return $this->_output[$cursor];
+        }
+        return "";
     }
 
     public function getOutput() {
