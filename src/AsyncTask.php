@@ -8,6 +8,7 @@ class AsyncTask {
     protected $_output = array();
     protected $_state = ASYNC_INIT;
     protected $_auto_delete = FALSE;
+    protected $_dependencies;
 
     public function __construct() {
         $this->_persistence = self::_newPersistence();
@@ -36,6 +37,7 @@ class AsyncTask {
             $task = new AsyncTask();
             $task->_state = ASYNC_DELETED;
         }
+
         return $task;
     }
 
@@ -145,6 +147,14 @@ class AsyncTask {
         $this->_auto_delete = TRUE;
 
         return $this;
+    }
+
+    public function addDependency($class_name, $file_name) {
+        $this->_dependencies[$class_name] = realpath($file_name);
+    }
+
+    public function getDependencies() {
+        return $this->_dependencies;
     }
 
     protected function _persist() {

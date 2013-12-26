@@ -1,7 +1,9 @@
 <?php
 
 spl_autoload_register(function($class) {
-    require_once("{$class}.php");
+    $path = realpath(__DIR__ . "/{$class}.php");
+    if (file_exists($path))
+        include_once($path);
 });
 
 define('ASYNC_INIT', 0);
