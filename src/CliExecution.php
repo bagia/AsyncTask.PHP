@@ -5,11 +5,13 @@ require_once("bootstrap.php");
 class CliExecution implements Execution {
 
     public function execute(AsyncTask $task) {
-        $command_line = 'php "' . realpath(__FILE__) . '" at_exec ' . $task->getIdentifier();
+        $file_name = escapeshellarg(realpath(__FILE__));
         if ($this->isWindows()) {
-            trigger_error('AsyncTask.PHP is not compatible with Windows', E_USER_ERROR);
+            $dir = realpath(__DIR__);
+            $command_line = "{$dir}/startbg/bin/startbg.exe php {$file_name} at_exec {$task->getIdentifier()}";
+            system($command_line);
         } else {
-            $command_line .= ' > /dev/null 2>&1 &';
+            $command_line = "php {$file_name} at_exec {$task->getIdentifier()} > /dev/null 2>&1 &";
             exec($command_line);
         }
     }
