@@ -47,6 +47,8 @@ class AsyncTask {
             trigger_error('Step must be a closure or a SerializableClosure object', E_ERROR);
 
         $this->_steps[] = $step;
+
+        return $this;
     }
 
     public function start() {
@@ -95,14 +97,21 @@ class AsyncTask {
             $this->_state = ASYNC_DONE;
             $this->_persist();
         }
+
+        return $this;
     }
 
     public function isDone() {
         return $this->_state == ASYNC_DONE || $this->_state == ASYNC_DELETED;
     }
 
-    public function getRefreshed() {
-        return self::get($this->getIdentifier());
+    public function refresh() {
+        $updated_object = self::get($this->getIdentifier());
+        foreach(get_object_vars($updated_object) as $name => $value) {
+            $this->{$name} = $value;
+        }
+
+        return $this;
     }
 
     public function getNewOutput(&$cursor) {
@@ -128,10 +137,14 @@ class AsyncTask {
     public function delete() {
         $this->_persistence->delete();
         $this->_state = ASYNC_DELETED;
+
+        return $this;
     }
 
     public function autoDelete() {
         $this->_auto_delete = TRUE;
+
+        return $this;
     }
 
     protected function _persist() {

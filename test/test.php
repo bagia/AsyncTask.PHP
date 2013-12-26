@@ -10,54 +10,48 @@ if (isset($argv[1])) {
     while(!$task->isDone()) {
         echo $task->getNewOutput($cursor);
         sleep(1);
-        $task = $task->getRefreshed();
+        $task->refresh();
     }
     exit;
 }
 
+// If no arg define and start the task
 $task = new AsyncTask();
 $task->addStep(function() {
     echo "Begin step 1\n";
     sleep(5);
     echo "End step 1\n";
-});
-$task->addStep(function() {
+})->addStep(function() {
     echo "Begin step 2\n";
     sleep(5);
     echo "End step 2\n";
-});
-$task->addStep(function() {
+})->addStep(function() {
     echo "Begin step 3\n";
     sleep(5);
     echo "End step 3\n";
-});
-$task->addStep(function() {
+})->addStep(function() {
     echo "Begin step 4\n";
     sleep(5);
     echo "End step 4\n";
-});
-$task->addStep(function() {
+})->addStep(function() {
     echo "Begin step 5\n";
     sleep(5);
     echo "End step 5\n";
-});
-$task->addStep(function() {
+})->addStep(function() {
     echo "Begin step 6\n";
     sleep(5);
     echo "End step 6\n";
-});
-$task->addStep(function() {
+})->addStep(function() {
     echo "Begin step 7\n";
     sleep(5);
     echo "End step 7\n";
-});
-$task->addStep(function() {
+})->addStep(function() {
     echo "Begin step 8\n";
     sleep(5);
     echo "End step 8\n";
-});
+})->autoDelete();
 
-$task->autoDelete();
 echo $task->start();
+
 echo "\n";
 
