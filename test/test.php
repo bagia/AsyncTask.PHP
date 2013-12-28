@@ -12,6 +12,10 @@ if (isset($argv[1])) {
         sleep(1);
         $task->refresh();
     }
+    if ($exception = $task->didFail()) {
+        echo "Task failed to execute:\n{$exception->getMessage()}\n";
+    }
+
     exit;
 }
 
@@ -23,6 +27,7 @@ $task->addStep(function() {
     echo "End step 1\n";
 })->addStep(function() {
     echo "Begin step 2\n";
+    throw new Exception("A problem occurred.");
     sleep(5);
     echo "End step 2\n";
 })->addStep(function() {

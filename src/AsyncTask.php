@@ -9,6 +9,7 @@ class AsyncTask {
     protected $_state = ASYNC_INIT;
     protected $_auto_delete = FALSE;
     protected $_dependencies = array();
+    protected $_exception = NULL;
 
     public function __construct() {
         $this->_persistence = self::_newPersistence();
@@ -85,7 +86,15 @@ class AsyncTask {
 
             $this->_currentStep = $step_index;
             ob_start();
-            $step(); // execute the closure
+            try {
+                $step(); // execute the closure
+            } catch(\Exception $exception) {
+                $this->setException(new \Exception($exception->getMessage(), $exception->getCode()));
+                $this->_state = ASYNC_CRASHED;
+                $this->_persist();
+                throw $exception;
+            }
+
             $output = ob_get_contents();
             $this->_output[$step_index] = $output;
             ob_end_flush();
@@ -103,8 +112,15 @@ class AsyncTask {
         return $this;
     }
 
+    public function didFail() {
+        if (!is_null($this->_exception))
+            return $this->_exception;
+
+        return FALSE;
+    }
+
     public function isDone() {
-        return $this->_state == ASYNC_DONE || $this->_state == ASYNC_DELETED;
+        return $this->_state >= ASYNC_DONE;
     }
 
     public function refresh() {
@@ -155,6 +171,14 @@ class AsyncTask {
 
     public function getDependencies() {
         return $this->_dependencies;
+    }
+
+    public function getException() {
+        return $this->_exception;
+    }
+
+    public function setException(\Exception $exception) {
+        $this->_exception = $exception;
     }
 
     protected function _persist() {

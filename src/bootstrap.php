@@ -9,4 +9,5 @@ spl_autoload_register(function($class) {
 define('ASYNC_INIT', 0);
 define('ASYNC_RUNNING', 1);
 define('ASYNC_DONE', 2);
-define('ASYNC_DELETED', 3);
+define('ASYNC_CRASHED', 3);
+define('ASYNC_DELETED', 4);
