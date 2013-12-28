@@ -2,6 +2,13 @@
 
 require_once(realpath(__DIR__ . "/bootstrap.php"));
 
+/**
+ * Class CliExecution
+ *
+ * @brief Use the CLI version of PHP to execute the task in the background
+ * @author bagia
+ * @license MIT
+ */
 class CliExecution implements Execution {
 
     public function execute(AsyncTask $task) {

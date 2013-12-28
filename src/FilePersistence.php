@@ -1,7 +1,14 @@
 <?php
 
-require_once("bootstrap.php");
+require_once(realpath(__DIR__ . "/bootstrap.php"));
 
+/**
+ * Class FilePersistence
+ *
+ * @brief Persist the data of the task in files
+ * @author bagia
+ * @license MIT
+ */
 class FilePersistence implements Persistence {
 
     protected $_file;
