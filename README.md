@@ -2,8 +2,23 @@ AsyncTask.PHP
 =============
 This library helps you plan, start, and follow the progress of time-consuming tasks in PHP.
 
+Concept
+=========
+- A task is composed of several steps.
+- The progress is the % of steps completed.
+- Steps are [closures](http://www.php.net/manual/en/class.closure.php "PHP: Closure - Manual").
+- When ```start()``` is called on a task, an entirely new PHP process is spawned.
+
 Example
 =======
+The following example is a web page that:
+- If no task_id parameter is given in the URL:
+    creates an Asynchronous task, and then starts it. 
+- If a task_id parameter is present in the query string:
+    shows the progress in % of steps completed of the associated task.
+
+The task is configured to be automatically deleted from the persistence layer when done.
+
 ```php
 <?php
 require_once('AsyncTask.PHP/src/bootstrap.php');
@@ -43,8 +58,6 @@ $task->autoDelete();
 echo $task->start();
 
 echo "\n";
-
-
 ```
 
 Licensing
@@ -53,22 +66,20 @@ This software is released under the MIT License.
 
 Troubleshooting
 ===============
-- The ```system``` function must NOT be disabled
-- The script is relying on files written in the /tmp directory (or the system default temporary directory if /tmp doesn't exist). Some distributions using systemd are executing services inside a sandbox that creates private tmp folders inside the /tmp directory. This system must be disabled to get AsyncTask.PHP to work.
-If using systemd, you must disable the ```PrivateTmp``` clause of the PHP service. Example:
+- The ```system``` function MUST be enabled
+- The script is relying on files written in the ```/tmp``` directory (or the system default temporary directory if ```/tmp``` doesn't exist). Some distributions using ```systemd``` are executing services inside a temporary directory sandbox that creates isolated folders inside the /tmp directory for each service. This system must be disabled to get **AsyncTask.PHP** to work.
+If using ```systemd```, you must disable the ```PrivateTmp``` clause of the PHP service. 
+
+Example (```/usr/lib/systemd/system/php-fpm.service```):
 
 ```ini
 [Unit]
-Description=The PHP FastCGI Process Manager
-After=syslog.target network.target
+...
 
 [Service]
-Type=notify
-PIDFile=/run/php-fpm/php-fpm.pid
+...
 PrivateTmp=false
-ExecStart=/usr/bin/php-fpm --nodaemonize --pid /run/php-fpm/php-fpm.pid
-ExecReload=/bin/kill -USR2 $MAINPID
 
 [Install]
-WantedBy=multi-user.target
+...
 ```
